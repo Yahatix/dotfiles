@@ -58,6 +58,9 @@ in
     mate.atril
     xterm
   ];
+  environment.sessionVariables = {
+    FLAKE = "/home/tim/my-flake";
+  };
 
   services.xserver.xkb = {
     layout = "de";
@@ -93,7 +96,7 @@ in
       unstable.mise
       unstable.gitkraken
       unstable.beeper
-      thunderbird
+      unstable.thunderbird-latest
       unstable.atuin
       gnome.simple-scan
       flameshot
@@ -108,6 +111,7 @@ in
       unstable.mariadb
 
       unstable.zellij
+      unstable.nh
     ];
   };
 

@@ -30,7 +30,7 @@
             inherit system inputs outputs unstable;
           };
           modules = [
-            ./configuration.nix
+            ./hosts/ocm285/configuration.nix
           ];
         };
       };

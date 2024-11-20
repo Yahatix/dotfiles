@@ -14,6 +14,7 @@
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "24.05"; # Please read the comment before changing.
+  fonts.fontconfig.enable = true;
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -36,6 +37,8 @@
     unstable.mariadb
 
     unstable.nh
+
+    (pkgs.nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -110,7 +113,6 @@
   programs.zellij = {
     enable = true;
     package = unstable.zellij;
-    enableBashIntegration = true;
   };
 
   programs.mise = {

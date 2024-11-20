@@ -70,6 +70,7 @@
   programs.bash = {
     enable = true;
     shellAliases = {
+      ".." = "cd ..";
       ls = "eza -li";
       ll = "eza -lia";
       vim = "nvim";
@@ -106,15 +107,16 @@
     enableBashIntegration = true;
   };
 
+  programs.zellij = {
+    enable = true;
+    package = unstable.zellij;
+    enableBashIntegration = true;
+  };
+
   programs.mise = {
     enable = true;
     package = unstable.mise;
     enableBashIntegration = true;
-    globalConfig = {
-      tools = {
-        node = "lts";
-      };
-    };
   };
 
   programs.eza = {

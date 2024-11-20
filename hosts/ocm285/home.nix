@@ -21,15 +21,12 @@
     unstable.vscode
     unstable.slack
     unstable.spotify
-    unstable.alacritty
-    unstable.mise
     unstable.gitkraken
     unstable.beeper
     unstable.thunderbird-latest
     gnome.simple-scan
     flameshot
     bambu-studio
-    unstable.nodejs
     unstable.pnpm
     unstable.google-chrome
     unstable.onlyoffice-desktopeditors
@@ -38,7 +35,6 @@
     unstable.ctop
     unstable.mariadb
 
-    unstable.zellij
     unstable.nh
   ];
 
@@ -59,7 +55,6 @@
 
   home.sessionVariables = {
     FLAKE = "/home/tim/my-flake";
-    SHELL = "${pkgs.bash}/bin/bash";
   };
 
 
@@ -67,14 +62,25 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  programs.alacritty = {
+    enable = true;
+    package = unstable.alacritty;
+  };
+
   programs.bash = {
+    enable = true;
     shellAliases = {
+      ls = "eza -li";
+      ll = "eza -lia";
       vim = "nvim";
+
       plat = "cd /srv/hybris/bin/platform";
       fe = "cd /srv/hybris/bin/custom/ocm/ocmstorefront/web/webroot/WEB-INF/_ui-src";
+
       dcu = "docker compose up -d";
       dcd = "docker compose down";
       dcr = "docker compose restart";
+
       hybris = "zellij --layout /srv/hybris/layout.kdl";
       pms = "zellij --layout ~/projects/ProductManagementSuite/layout.kdl";
     };
@@ -89,8 +95,36 @@
     '';
   };
 
+  programs.neovim = {
+    enable = true;
+    vimAlias = true;
+    defaultEditor = true;
+  };
+
   programs.atuin = {
     enable = true;
     enableBashIntegration = true;
+  };
+
+  programs.mise = {
+    enable = true;
+    package = unstable.mise;
+    enableBashIntegration = true;
+    globalConfig = {
+      tools = {
+        node = "lts";
+      };
+    };
+  };
+
+  programs.eza = {
+    enable = true;
+    enableBashIntegration = true;
+    icons = true;
+    git = true;
+    extraOptions = [
+      "--group-directories-first"
+      "--header"
+    ];
   };
 }

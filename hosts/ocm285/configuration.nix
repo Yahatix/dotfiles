@@ -2,17 +2,11 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, unstable, ... }:
-
-let
-  # unstable = import <nixpkgs-unstable> {
-  #   config.allowUnfree = true;
-  # };
-in
-{
+{ config, pkgs, unstable, inputs, ... }: {
   imports =
     [
       ./hardware-configuration.nix
+      inputs.home-manager.nixosModules.default
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -88,31 +82,13 @@ in
     isNormalUser = true;
     description = "tim";
     extraGroups = [ "networkmanager" "wheel" "docker" "input" "libvirtd" ];
-    packages = with pkgs; [
-      unstable.vscode
-      unstable.slack
-      unstable.spotify
-      unstable.alacritty
-      unstable.mise
-      unstable.gitkraken
-      unstable.beeper
-      unstable.thunderbird-latest
-      unstable.atuin
-      gnome.simple-scan
-      flameshot
-      bambu-studio
-      unstable.nodejs
-      unstable.pnpm
-      unstable.google-chrome
-      unstable.onlyoffice-desktopeditors
+  };
 
-      unstable.mysql-workbench
-      unstable.ctop
-      unstable.mariadb
-
-      unstable.zellij
-      unstable.nh
-    ];
+  home-manager = {
+    extraSpecialArgs = { inherit inputs unstable; };
+    users = {
+      "tim" = import ./home.nix;
+    };
   };
 
   # Install firefox.
@@ -124,7 +100,7 @@ in
   virtualisation.docker.enable = true;
 
   programs.bash.blesh.enable = true;
-  services.atuin.enable = true;
+  #services.atuin.enable = true;
   programs.direnv.enable = true;
   programs.nm-applet.enable = true;
 

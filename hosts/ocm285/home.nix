@@ -28,7 +28,6 @@
     gnome.simple-scan
     flameshot
     bambu-studio
-    unstable.pnpm
     unstable.google-chrome
     unstable.onlyoffice-desktopeditors
 
@@ -39,6 +38,7 @@
     unstable.nh
 
     (pkgs.nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
+    monaspace
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -57,7 +57,7 @@
   };
 
   home.sessionVariables = {
-    FLAKE = "/home/tim/my-flake";
+    FLAKE = "/home/tim/.dotfiles";
   };
 
 
@@ -130,5 +130,68 @@
       "--group-directories-first"
       "--header"
     ];
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableBashIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  programs.vscode = {
+    enable = true;
+    package = unstable.vscode;
+    keybindings = [
+      {
+        key = "alt+[Semicolon]";
+        command = "editor.action.commentLine";
+        when = "editorTextFocus && !editorReadonly";
+      }
+      {
+        key = "alt+[Quote]";
+        command = "editor.action.blockComment";
+        when = "editorTextFocus && !editorReadonly";
+      }
+    ];
+
+    extensions = [
+      unstable.vscode-extensions.svelte.svelte-vscode
+      unstable.vscode-extensions.dbaeumer.vscode-eslint
+      unstable.vscode-extensions.github.copilot
+      unstable.vscode-extensions.github.copilot-chat
+      unstable.vscode-extensions.esbenp.prettier-vscode
+      unstable.vscode-extensions.bradlc.vscode-tailwindcss
+      unstable.vscode-extensions.vue.volar
+      unstable.vscode-extensions.eamodio.gitlens
+      unstable.vscode-extensions.bbenoist.nix
+      unstable.vscode-extensions.jnoortheen.nix-ide
+      unstable.vscode-extensions.christian-kohler.path-intellisense
+    ];
+
+    userSettings = {
+      "editor.formatOnSave" = true;
+
+      "editor.fontFamily" = "Monaspace Radon Var, Fira Code, Monaco, monospace";
+      "editor.fontSize" = 16;
+      "terminal.integrated.fontFamily" = "Monaspace Radon Var, Fira Code, Monaco, monospace";
+      "editor.fontLigatures" = "'calt', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07', 'ss08', 'ss09', 'liga'";
+
+      "[vue]" = {
+        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+      };
+      "[javascript]" = {
+        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+      };
+      "[typescript]" = {
+        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+      };
+      "[json]" = {
+        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+      };
+      "svelte.enable-ts-plugin" = true;
+      "[svelte]" = {
+        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+      };
+    };
   };
 }

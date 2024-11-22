@@ -101,7 +101,7 @@
 
   programs.bash.blesh.enable = true;
   #services.atuin.enable = true;
-  programs.direnv.enable = true;
+  # programs.direnv.enable = true;
   programs.nm-applet.enable = true;
 
   environment.systemPackages = with pkgs; [

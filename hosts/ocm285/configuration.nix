@@ -119,7 +119,7 @@
 
   hardware.wooting.enable = true;
 
-  system.stateVersion = "24.05"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
   system.autoUpgrade.enable = true;
 
 
@@ -142,7 +142,7 @@
   };
   programs.virt-manager.enable = true;
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
   };
 

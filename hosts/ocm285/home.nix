@@ -20,6 +20,7 @@
   # environment.
   home.packages = with pkgs; [
     unstable.vscode
+    unstable.jetbrains.idea-ultimate
     unstable.slack
     unstable.spotify
     unstable.gitkraken

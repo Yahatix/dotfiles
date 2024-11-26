@@ -33,7 +33,7 @@
     unstable.onlyoffice-desktopeditors
 
     unstable.mysql-workbench
-    unstable.ctop
+    unstable.oxker
     unstable.mariadb
 
     unstable.nh

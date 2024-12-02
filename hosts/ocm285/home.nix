@@ -36,6 +36,8 @@
     unstable.oxker
     unstable.mariadb
 
+    freecad
+
     unstable.nh
 
     (pkgs.nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
@@ -73,6 +75,7 @@
 
   programs.bash = {
     enable = true;
+    enableCompletion = true;
     shellAliases = {
       ".." = "cd ..";
       ls = "eza -li";
@@ -136,7 +139,6 @@
   programs.direnv = {
     enable = true;
     enableBashIntegration = true;
-    nix-direnv.enable = true;
   };
 
   programs.vscode = {

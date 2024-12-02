@@ -20,7 +20,8 @@
   networking.networkmanager.enable = true;
 
   networking.hosts = {
-    "127.0.0.1" = [ "outletcity-dev.com" "www.outletcity-dev.com" ];
+    #"127.0.0.1" = [ "outletcity-dev.com" "www.outletcity-dev.com" ];
+    "87.106.162.23" = [ "outletcity-dev.com" "www.outletcity-dev.com"];
     "192.168.178.1" = [ "fritz.box" ];
   };
 
@@ -126,7 +127,7 @@
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
-      package = pkgs.qemu_kvm;
+      package = pkgs.qemu_full;
       runAsRoot = true;
       swtpm.enable = true;
       ovmf = {

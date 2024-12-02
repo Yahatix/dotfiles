@@ -27,6 +27,7 @@
   environment.systemPackages = map lib.lowPrio [
     pkgs.curl
     pkgs.gitMinimal
+    pkgs.neovim
   ];
 
   users.users.root.openssh.authorizedKeys.keys = [
@@ -37,22 +38,16 @@
   users.users.tim = {
     isNormalUser = true;
     description = "tim";
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "input" ];
     packages = with pkgs; [
       oxker
       nh
-      neovim
       zellij
       atuin
       eza
       direnv
+      bash-preexec
+      bash-completion
     ];
   };
-
-  # home-manager = {
-  #   extraSpecialArgs = { inherit inputs unstable; };
-  #   users = {
-  #     "tim" = import ./home.nix;
-  #   };
-  # };
 }

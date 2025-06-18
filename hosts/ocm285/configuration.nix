@@ -14,6 +14,7 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.supportedFilesystems = [ "ntfs" ];
 
   networking.hostName = "ocm285";
 
@@ -21,15 +22,16 @@
 
   networking.hosts = {
     #"127.0.0.1" = [ "outletcity-dev.com" "www.outletcity-dev.com" ];
-    "87.106.162.23" = [ "outletcity-dev.com" "www.outletcity-dev.com"];
-    "192.168.178.1" = [ "fritz.box" ];
+    "87.106.162.23" = [  "outletcity-dev.com" "www.outletcity-dev.com" ];
+    #  "192.168.178.1" = [ "fritz.box" ];
   };
+  networking.firewall.allowedTCPPorts = [ 9002 5173 ];
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "de_DE.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "de_DE.UTF-8";
@@ -44,17 +46,19 @@
   };
 
   services.xserver.enable = true;
-
   services.xserver.displayManager.lightdm.enable = true;
   services.xserver.desktopManager.budgie.enable = true;
+
   environment.budgie.excludePackages = with pkgs; [
     vlc
     mate.pluma
     mate.atril
     xterm
+    gnome-terminal
   ];
   environment.sessionVariables = {
-    FLAKE = "/home/tim/my-flake";
+    FLAKE = "/home/tim/.dotfiles";
+    NH_FLAKE = "/home/tim/.dotfiles";
   };
 
   services.xserver.xkb = {
@@ -66,8 +70,14 @@
 
   services.printing.enable = true;
   services.ipp-usb.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
-  hardware.pulseaudio.enable = false;
+
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -85,51 +95,54 @@
     extraGroups = [ "networkmanager" "wheel" "docker" "input" "libvirtd" ];
   };
 
-  home-manager = {
-    extraSpecialArgs = { inherit inputs unstable; };
-    users = {
-      "tim" = import ./home.nix;
-    };
-  };
-
-  # Install firefox.
-  programs.firefox = {
-    enable = true;
-    package = pkgs.firefox;
-  };
-
   virtualisation.docker.enable = true;
 
   programs.bash.blesh.enable = true;
-  #services.atuin.enable = true;
-  # programs.direnv.enable = true;
   programs.nm-applet.enable = true;
 
   environment.systemPackages = with pkgs; [
-    unstable.wget
-    unstable.neovim
+    inputs.nix-software-center.packages.${system}.nix-software-center
+    nixpkgs-fmt
     unzip
     zip
+    tldr
+    unstable.wget
+    unstable.neovim
     unstable.duf
     unstable.htop
     unstable.git
     unstable.ps
     unstable.gettext
-    nixpkgs-fmt
+    brscan5
+    spice-gtk
+    usbredir
+    gparted
+    cups-brother-mfcl2800dw
   ];
 
-  hardware.wooting.enable = true;
+  services.flatpak.enable = true;
+  systemd.services.flatpak-repo = {
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.flatpak ];
+    script = ''
+      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    '';
+  };
+
+  # hardware.wooting.enable = true;
+  services.udev.packages = [ unstable.wooting-udev-rules ];
 
   system.stateVersion = "24.11"; # Did you read the comment?
   system.autoUpgrade.enable = true;
 
-
+  virtualisation.spiceUSBRedirection.enable = true;
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
       package = pkgs.qemu_full;
       runAsRoot = true;
       swtpm.enable = true;
+      vhostUserPackages = with pkgs; [ virtiofsd ];
       ovmf = {
         enable = true;
         packages = [
@@ -164,5 +177,4 @@
       nvidiaBusId = "PCI:1:0:0";
     };
   };
-
 }

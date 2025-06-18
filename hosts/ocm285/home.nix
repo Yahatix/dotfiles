@@ -1,6 +1,7 @@
-{ config, pkgs, unstable, ... }:
+{ pkgs, unstable, ... }:
 
 {
+  nixpkgs.config.allowUnfreePredicate = (pkg: true);
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "tim";
@@ -20,29 +21,68 @@
   # environment.
   home.packages = with pkgs; [
     unstable.vscode
-    unstable.jetbrains.idea-ultimate
-    unstable.slack
-    unstable.spotify
+    unstable.zed-editor
+
     unstable.gitkraken
+    nil
+    mission-center
+    mpv
+    digikam
+    wacomtablet
+    unstable.opentabletdriver
+    filezilla
+    rustdesk
+
+    unstable.bottles
+    appimage-run
+    flatpak
+    gnome-software
+
+    unstable.google-chrome
+    firefox
+
+    unstable.heroic
+
+    unstable.uutils-coreutils
+    nvtopPackages.full
+    screen
+    unstable.neohtop
+    rustscan
+    dig
+    
+    unstable.drawio
+    discord
+    simple-scan
+    naps2
+    unstable.orca-slicer
+    #bambu-studio
+    flameshot
+    unstable.onlyoffice-desktopeditors
+    freecad
+    unstable.gimp3
+    unstable.inkscape
     unstable.beeper
     unstable.thunderbird-latest
-    simple-scan
-    flameshot
-    bambu-studio
-    unstable.google-chrome
-    unstable.onlyoffice-desktopeditors
+    unstable.spotify
+    cameractrls-gtk4
+    unstable.osu-lazer-bin
+    oculante
 
-    unstable.mysql-workbench
-    unstable.oxker
-    unstable.mariadb
+    gramps
 
-    freecad
+    # Work
+    unstable.slack
+    mysql-workbench
+    mariadb
+    unstable.ctop
+    jetbrains.idea-ultimate
 
     unstable.nh
-
-    (pkgs.nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
-    monaspace
   ];
+
+  # font.packages = with pkgs; [
+  #   monaspace
+  # ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -59,142 +99,114 @@
     # '';
   };
 
+
   home.sessionVariables = {
     FLAKE = "/home/tim/.dotfiles";
+    NH_FLAKE = "/home/tim/.dotfiles";
   };
 
 
+  programs = {
+    home-manager.enable = true;
 
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
-
-  programs.alacritty = {
-    enable = true;
-    package = unstable.alacritty;
-  };
-
-  programs.bash = {
-    enable = true;
-    enableCompletion = true;
-    shellAliases = {
-      ".." = "cd ..";
-      ls = "eza -li";
-      ll = "eza -lia";
-      vim = "nvim";
-
-      plat = "cd /srv/hybris/bin/platform";
-      fe = "cd /srv/hybris/bin/custom/ocm/ocmstorefront/web/webroot/WEB-INF/_ui-src";
-
-      dcu = "docker compose up -d";
-      dcd = "docker compose down";
-      dcr = "docker compose restart";
-
-      hybris = "zellij --layout /srv/hybris/layout.kdl";
-      pms = "zellij --layout ~/projects/ProductManagementSuite/layout.kdl";
+    alacritty = {
+      enable = true;
+      package = unstable.alacritty;
     };
-    bashrcExtra = ''
-      # pnpm
-      export PNPM_HOME="/home/tim/.local/share/pnpm"
-      case ":$PATH:" in
-        *":$PNPM_HOME:"*) ;;
-        *) export PATH="$PNPM_HOME:$PATH" ;;
-      esac
-      # pnpm end
-    '';
-  };
 
-  programs.neovim = {
-    enable = true;
-    vimAlias = true;
-    defaultEditor = true;
-  };
+    bash = {
+      enable = true;
+      enableCompletion = true;
+      shellAliases = {
+        ".." = "cd ..";
+        ls = "eza -li";
+        ll = "eza -lia";
+        vim = "nvim";
 
-  programs.atuin = {
-    enable = true;
-    enableBashIntegration = true;
-  };
+        plat = "cd /srv/hybris/bin/platform";
+        fe = "cd /srv/hybris/bin/custom/ocm/ocmstorefront/web/webroot/WEB-INF/_ui-src";
 
-  programs.zellij = {
-    enable = true;
-    package = unstable.zellij;
-  };
+        dcu = "docker compose up -d";
+        dcd = "docker compose down";
+        dcr = "docker compose restart";
 
-  programs.mise = {
-    enable = true;
-    package = unstable.mise;
-    enableBashIntegration = true;
-  };
-
-  programs.eza = {
-    enable = true;
-    enableBashIntegration = true;
-    icons = "auto";
-    git = true;
-    extraOptions = [
-      "--group-directories-first"
-      "--header"
-    ];
-  };
-
-  programs.direnv = {
-    enable = true;
-    enableBashIntegration = true;
-  };
-
-  programs.vscode = {
-    enable = true;
-    package = unstable.vscode;
-    keybindings = [
-      {
-        key = "alt+[Semicolon]";
-        command = "editor.action.commentLine";
-        when = "editorTextFocus && !editorReadonly";
-      }
-      {
-        key = "alt+[Quote]";
-        command = "editor.action.blockComment";
-        when = "editorTextFocus && !editorReadonly";
-      }
-    ];
-
-    extensions = [
-      unstable.vscode-extensions.svelte.svelte-vscode
-      unstable.vscode-extensions.dbaeumer.vscode-eslint
-      unstable.vscode-extensions.github.copilot
-      unstable.vscode-extensions.github.copilot-chat
-      unstable.vscode-extensions.esbenp.prettier-vscode
-      unstable.vscode-extensions.bradlc.vscode-tailwindcss
-      unstable.vscode-extensions.vue.volar
-      unstable.vscode-extensions.eamodio.gitlens
-      unstable.vscode-extensions.bbenoist.nix
-      unstable.vscode-extensions.jnoortheen.nix-ide
-      unstable.vscode-extensions.christian-kohler.path-intellisense
-    ];
-
-    userSettings = {
-      "editor.formatOnSave" = true;
-
-      "editor.fontFamily" = "Monaspace Radon Var, Fira Code, Monaco, monospace";
-      "editor.fontSize" = 16;
-      "terminal.integrated.fontFamily" = "Monaspace Radon Var, Fira Code, Monaco, monospace";
-      "editor.fontLigatures" = "'calt', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07', 'ss08', 'ss09', 'liga'";
-
-      "[vue]" = {
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+        hybris = "zellij --layout /srv/hybris-flake/layout.kdl";
+        pms = "zellij --layout ~/projects/pms-flake/pms-layout.kdl";
       };
-      "[javascript]" = {
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
-      };
-      "[typescript]" = {
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
-      };
-      "[json]" = {
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
-      };
-      "svelte.enable-ts-plugin" = true;
-      "[svelte]" = {
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
-      };
+      bashrcExtra = ''
+        # pnpm
+        export PNPM_HOME="/home/tim/.local/share/pnpm"
+        case ":$PATH:" in
+          *":$PNPM_HOME:"*) ;;
+          *) export PATH="$PNPM_HOME:$PATH" ;;
+        esac
+        # pnpm end
+      '';
+    };
+
+    starship = {
+      enable = true;
+      enableBashIntegration = true;
+    };
+
+    neovim = {
+      enable = true;
+      vimAlias = true;
+      defaultEditor = true;
+    };
+
+    atuin = {
+      enable = true;
+      enableBashIntegration = true;
+    };
+
+    zellij = {
+      enable = true;
+      package = unstable.zellij;
+    };
+
+    eza = {
+      enable = true;
+      enableBashIntegration = true;
+      icons = "auto";
+      git = true;
+      extraOptions = [
+        "--group-directories-first"
+        "--header"
+      ];
+    };
+
+    yazi = {
+      enable = true;
+      enableBashIntegration = true;
+    };
+
+    direnv = {
+      enable = true;
+      enableBashIntegration = true;
+    };
+
+    lazygit.enable = true;
+    gitui.enable = true;
+
+    vscode = {
+      enable = true;
+      package = unstable.vscode;
+      # extensions = [
+      #   unstable.vscode-extensions.svelte.svelte-vscode
+      #   unstable.vscode-extensions.dbaeumer.vscode-eslint
+      #   unstable.vscode-extensions.github.copilot
+      #   unstable.vscode-extensions.github.copilot-chat
+      #   unstable.vscode-extensions.esbenp.prettier-vscode
+      #   unstable.vscode-extensions.bradlc.vscode-tailwindcss
+      #   unstable.vscode-extensions.vue.volar
+      #   unstable.vscode-extensions.eamodio.gitlens
+      #   unstable.vscode-extensions.bbenoist.nix
+      #   unstable.vscode-extensions.jnoortheen.nix-ide
+      #   unstable.vscode-extensions.christian-kohler.path-intellisense
+      #   unstable.vscode-extensions.ms-vscode-remote.remote-ssh
+      #   unstable.vscode-extensions.fill-labs.dependi
+      # ];
     };
   };
 }

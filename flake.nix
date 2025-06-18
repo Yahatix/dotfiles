@@ -2,23 +2,22 @@
   description = "NixOS Configuration for ocm285";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    home-manager.url = "github:nix-community/home-manager/release-24.11";
+
+    home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
+    nix-software-center.url = "github:snowfallorg/nix-software-center";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
     let
       inherit (self) outputs;
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
-        config = {
-          allowUnfree = true;
-        };
+        config.allowUnfree = true;
       };
       unstable = import nixpkgs-unstable {
         inherit system;
@@ -35,20 +34,6 @@
           };
           modules = [
             ./hosts/ocm285/configuration.nix
-            inputs.home-manager.nixosModules.default
-          ];
-        };
-        strato = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit inputs outputs unstable;
-          };
-
-          modules = [
-            disko.nixosModules.disko
-            ./hosts/strato/configuration.nix
-            ./hosts/strato/hardware-configuration.nix
-            # inputs.home-manager.nixosModules.default
           ];
         };
       };
@@ -56,14 +41,11 @@
       homeConfigurations = {
         tim = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = { inherit inputs unstable; };
+          extraSpecialArgs = {
+            inherit inputs unstable;
+          };
           modules = [ ./hosts/ocm285/home.nix ];
         };
-        # "tim@server" = home-manager.lib.homeManagerConfiguration {
-        #   inherit pkgs;
-        #   extraSpecialArgs = { inherit inputs unstable; };
-        #   modules = [ ./hosts/strato/home.nix ];
-        # };
       };
     };
 }

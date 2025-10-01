@@ -1,9 +1,16 @@
-{ pkgs, unstable, ... }:
+{
+  pkgs,
+  unstable,
+  inputs,
+  ...
+}:
 
 {
+  # imports = [ inputs.kimai-applet.homeManagerModules.default ];
+
   nixpkgs.config.allowUnfreePredicate = (pkg: true);
   # Home Manager needs a bit of information about you and the paths it should
-  # manage.
+  # manage
   home.username = "tim";
   home.homeDirectory = "/home/tim";
 
@@ -22,9 +29,12 @@
   home.packages = with pkgs; [
     unstable.vscode
     unstable.zed-editor
+    uv
 
     unstable.gitkraken
     nil
+    nixd
+    nixfmt-rfc-style
     mission-center
     mpv
     digikam
@@ -46,16 +56,18 @@
     unstable.uutils-coreutils
     nvtopPackages.full
     screen
-    unstable.neohtop
+    neohtop
     rustscan
     dig
-    
+    lxqt.qlipper
+    localsend
+
     unstable.drawio
     discord
     simple-scan
     naps2
-    unstable.orca-slicer
     #bambu-studio
+    orca-slicer
     flameshot
     unstable.onlyoffice-desktopeditors
     freecad
@@ -67,6 +79,28 @@
     cameractrls-gtk4
     unstable.osu-lazer-bin
     oculante
+    nextcloud-client
+    (
+      let
+        pname = "freeshow";
+        version = "1.4.8";
+        src = pkgs.fetchurl {
+          url = "https://github.com/ChurchApps/FreeShow/releases/download/v${version}/FreeShow-${version}-x86_64.AppImage";
+          hash = "sha256-SopfSQY4LfllOu9rd1xYFW0nDCYEUz8DNWT9P5JBeD4=";
+        };
+        appimageContents = pkgs.appimageTools.extract { inherit pname version src; };
+      in
+      pkgs.appimageTools.wrapType2 {
+        inherit pname version src;
+        pkgs = pkgs;
+        extraInstallCommands = ''
+          install -m 444 -D ${appimageContents}/${pname}.desktop -t $out/share/applications
+          substituteInPlace $out/share/applications/${pname}.desktop \
+            --replace 'Exec=AppRun' 'Exec=${pname}'
+          cp -r ${appimageContents}/usr/share/icons $out/share
+        '';
+      }
+    )
 
     gramps
 
@@ -99,12 +133,10 @@
     # '';
   };
 
-
   home.sessionVariables = {
     FLAKE = "/home/tim/.dotfiles";
     NH_FLAKE = "/home/tim/.dotfiles";
   };
-
 
   programs = {
     home-manager.enable = true;
@@ -184,6 +216,7 @@
     direnv = {
       enable = true;
       enableBashIntegration = true;
+      nix-direnv.enable = true;
     };
 
     lazygit.enable = true;

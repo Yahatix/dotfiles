@@ -2,30 +2,52 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, unstable, inputs, ... }: {
-  imports =
-    [
-      ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.default
-    ];
+{
+  config,
+  pkgs,
+  unstable,
+  inputs,
+  ...
+}:
+{
+  imports = [
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.default
+  ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "ntfs" ];
 
+  # Use a newer kernel version
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   networking.hostName = "ocm285";
 
   networking.networkmanager.enable = true;
 
   networking.hosts = {
-    #"127.0.0.1" = [ "outletcity-dev.com" "www.outletcity-dev.com" ];
-    "87.106.162.23" = [  "outletcity-dev.com" "www.outletcity-dev.com" ];
-    #  "192.168.178.1" = [ "fritz.box" ];
+    # "127.0.0.1" = [ "outletcity-dev.com" "www.outletcity-dev.com" ];
+    # "192.168.49.2" = [ "outletcity-dev.com" "www.outletcity-dev.com" ];
+     "87.106.162.23" = [  "outletcity-dev.com" "www.outletcity-dev.com" ];
+    # "192.168.178.1" = [ "fritz.box" ];
   };
-  networking.firewall.allowedTCPPorts = [ 9002 5173 ];
+
+  networking.firewall.enable = false;
+
+  # networking.firewall.allowedTCPPorts = [
+  #   9002
+  #   5173
+  #   5510 # freeshow remote control
+  #   5511 # freeshow stage show
+  #   5512 # freeshow control show
+  # ];
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
@@ -76,7 +98,6 @@
     openFirewall = true;
   };
 
-
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -88,21 +109,39 @@
 
   nixpkgs.config.allowUnfree = true;
 
-
   users.users.tim = {
     isNormalUser = true;
     description = "tim";
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" "libvirtd" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "docker"
+      "input"
+      "libvirtd"
+    ];
   };
 
-  virtualisation.docker.enable = true;
+  virtualisation = {
+    docker = {
+      enable = true;
+      daemon = {
+        settings = {
+          userland-proxy = false;
+          experimental = true;
+          metrics-addr = "0.0.0.0:9323";
+          ipv6 = true;
+          fixed-cidr-v6 = "fd00::/80";
+        };
+      };
+    };
+  };
 
   programs.bash.blesh.enable = true;
   programs.nm-applet.enable = true;
 
   environment.systemPackages = with pkgs; [
     inputs.nix-software-center.packages.${system}.nix-software-center
-    nixpkgs-fmt
+    nixfmt-rfc-style
     unzip
     zip
     tldr
@@ -130,7 +169,9 @@
   };
 
   # hardware.wooting.enable = true;
-  services.udev.packages = [ unstable.wooting-udev-rules ];
+  services.udev.packages = [
+    unstable.wooting-udev-rules
+  ];
 
   system.stateVersion = "24.11"; # Did you read the comment?
   system.autoUpgrade.enable = true;
@@ -175,6 +216,20 @@
       sync.enable = true;
       intelBusId = "PCI:0:2:0";
       nvidiaBusId = "PCI:1:0:0";
+    };
+  };
+
+  # Specializations
+  specialisation = {
+    cosmic.configuration = {
+      # Disable LightDM and Budgie for COSMIC
+      services.xserver.displayManager.lightdm.enable = pkgs.lib.mkForce false;
+      services.xserver.desktopManager.budgie.enable = pkgs.lib.mkForce false;
+
+      # Enable COSMIC Desktop Manager
+      services.displayManager.cosmic-greeter.enable = true;
+      services.desktopManager.cosmic.enable = true;
+      services.desktopManager.cosmic.xwayland.enable = true;
     };
   };
 }

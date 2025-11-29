@@ -1,7 +1,6 @@
 {
   pkgs,
   unstable,
-  inputs,
   ...
 }:
 
@@ -21,7 +20,7 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "24.11"; # Please read the comment before changing.
+  home.stateVersion = "25.11"; # Please read the comment before changing.
   fonts.fontconfig.enable = true;
 
   # The home.packages option allows you to install Nix packages into your
@@ -29,29 +28,45 @@
   home.packages = with pkgs; [
     unstable.vscode
     unstable.zed-editor
-    uv
 
     unstable.gitkraken
     nil
     nixd
     nixfmt-rfc-style
-    mission-center
     mpv
-    digikam
-    wacomtablet
-    unstable.opentabletdriver
     filezilla
     rustdesk
 
     unstable.bottles
     appimage-run
     flatpak
-    gnome-software
 
     unstable.google-chrome
     firefox
 
     unstable.heroic
+    #modrinth-app
+    (
+      let
+        pname = "modrinth";
+        version = "0.10.20";
+        src = pkgs.fetchurl {
+          url = "https://launcher-files.modrinth.com/versions/${version}/linux/Modrinth%20App_${version}_amd64.AppImage";
+          hash = "sha256-2Dwbn+bKQPpvK1N/2yMZWxbcqA1S6IDaO0sljLytMxM=";
+        };
+        appimageContents = pkgs.appimageTools.extract { inherit pname version src; };
+      in
+      pkgs.appimageTools.wrapType2 {
+        inherit pname version src;
+        pkgs = pkgs;
+        extraInstallCommands = ''
+          install -m 444 -D ${appimageContents}/Modrinth\ App.desktop -t $out/share/applications
+          substituteInPlace $out/share/applications/Modrinth\ App.desktop \
+            --replace 'Exec=ModrinthApp' 'Exec=${pname}'
+          cp -r ${appimageContents}/usr/share/icons $out/share
+        '';
+      }
+    )
 
     unstable.uutils-coreutils
     nvtopPackages.full
@@ -59,16 +74,11 @@
     neohtop
     rustscan
     dig
-    lxqt.qlipper
     localsend
 
-    unstable.drawio
     discord
     simple-scan
-    naps2
-    #bambu-studio
     orca-slicer
-    flameshot
     unstable.onlyoffice-desktopeditors
     freecad
     unstable.gimp3
@@ -108,15 +118,12 @@
     unstable.slack
     mysql-workbench
     mariadb
-    unstable.ctop
     jetbrains.idea-ultimate
 
+    unstable.ctop
     unstable.nh
+    noto-fonts-cjk-serif
   ];
-
-  # font.packages = with pkgs; [
-  #   monaspace
-  # ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -131,11 +138,15 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+    # ".config/husky/init.sh".text = ''
+    #   eval "$(${pkgs.direnv}/bin/direnv hook bash)"
+    # '';
   };
 
   home.sessionVariables = {
     FLAKE = "/home/tim/.dotfiles";
     NH_FLAKE = "/home/tim/.dotfiles";
+    COSMIC_DATA_CONTROL_ENABLED = "1";
   };
 
   programs = {
@@ -225,21 +236,6 @@
     vscode = {
       enable = true;
       package = unstable.vscode;
-      # extensions = [
-      #   unstable.vscode-extensions.svelte.svelte-vscode
-      #   unstable.vscode-extensions.dbaeumer.vscode-eslint
-      #   unstable.vscode-extensions.github.copilot
-      #   unstable.vscode-extensions.github.copilot-chat
-      #   unstable.vscode-extensions.esbenp.prettier-vscode
-      #   unstable.vscode-extensions.bradlc.vscode-tailwindcss
-      #   unstable.vscode-extensions.vue.volar
-      #   unstable.vscode-extensions.eamodio.gitlens
-      #   unstable.vscode-extensions.bbenoist.nix
-      #   unstable.vscode-extensions.jnoortheen.nix-ide
-      #   unstable.vscode-extensions.christian-kohler.path-intellisense
-      #   unstable.vscode-extensions.ms-vscode-remote.remote-ssh
-      #   unstable.vscode-extensions.fill-labs.dependi
-      # ];
     };
   };
 }

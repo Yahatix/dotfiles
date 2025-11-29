@@ -2,11 +2,11 @@
   description = "NixOS Configuration for ocm285";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-software-center.url = "github:snowfallorg/nix-software-center";
   };
@@ -40,7 +40,7 @@
             inherit inputs outputs unstable;
           };
           modules = [
-            ./hosts/ocm285/configuration.nix
+            ./configuration.nix
           ];
         };
       };
@@ -51,7 +51,7 @@
           extraSpecialArgs = {
             inherit inputs unstable;
           };
-          modules = [ ./hosts/ocm285/home.nix ];
+          modules = [ ./home.nix ];
         };
       };
     };

@@ -147,7 +147,23 @@
     FLAKE = "/home/tim/.dotfiles";
     NH_FLAKE = "/home/tim/.dotfiles";
     COSMIC_DATA_CONTROL_ENABLED = "1";
+    GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
+    SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
   };
+
+  services = {
+    ssh-agent = {
+      enable = true;
+    };
+  };
+
+  xdg.configFile."autostart/gnome-keyring-ssh.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=SSH Key Agent
+    Exec=/bin/true
+    Hidden=true
+  '';
 
   programs = {
     home-manager.enable = true;
@@ -155,6 +171,22 @@
     alacritty = {
       enable = true;
       package = unstable.alacritty;
+    };
+
+    ssh = {
+      enable = true;
+      enableDefaultConfig = true;
+      matchBlocks = {
+        "server" = {
+          hostname = "87.106.162.23";
+          user = "tim";
+          addKeysToAgent = "yes";
+        };
+        "gemeinde" = {
+          hostname = "112084.test-my-website.de";
+          user = "34921f24455u1";
+        };
+      };
     };
 
     bash = {
@@ -177,6 +209,9 @@
         pms = "zellij --layout ~/projects/pms-flake/pms-layout.kdl";
       };
       bashrcExtra = ''
+        # SSH Agent
+        export SSH_AUTH_SOCK="/run/user/1000/ssh-agent"
+
         # pnpm
         export PNPM_HOME="/home/tim/.local/share/pnpm"
         case ":$PATH:" in

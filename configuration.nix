@@ -15,40 +15,6 @@
     inputs.home-manager.nixosModules.default
   ];
 
-  # nixpkgs.overlays = [
-  #   (final: prev: {
-  #     cosmic-greeter = unstable.cosmic-greeter;
-  #     cosmic-bg = unstable.cosmic-bg;
-  #     cosmic-osd = unstable.cosmic-osd;
-  #     cosmic-panel = unstable.cosmic-panel;
-  #     cosmic-idle = unstable.cosmic-idle;
-  #     cosmic-store = unstable.cosmic-store;
-
-  #     cosmic-randr = unstable.cosmic-randr;
-  #     cosmic-icons = unstable.cosmic-icons;
-  #     cosmic-player = unstable.cosmic-player;
-  #     cosmic-launcher = unstable.cosmic-launcher;
-  #     cosmic-wallpapers = unstable.cosmic-wallpapers;
-  #     cosmic-screenshot = unstable.cosmic-screenshot;
-  #     cosmic-notifications = unstable.cosmic-notifications;
-
-  #     cosmic-applibrary = unstable.cosmic-applibrary;
-  #     cosmic-workspaces-epoch = unstable.cosmic-workspaces-epoch;
-  #     xdg-desktop-portal-cosmic = unstable.xdg-desktop-portal-cosmic;
-  #     cosmic-settings-daemon = unstable.cosmic-settings-daemon;
-
-  #     # cosmic- = unstable.cosmic-;
-
-  #     cosmic-session = unstable.cosmic-session;
-  #     cosmic-settings = unstable.cosmic-settings;
-  #     cosmic-files = unstable.cosmic-files;
-  #     cosmic-term = unstable.cosmic-term;
-  #     cosmic-edit = unstable.cosmic-edit;
-  #     cosmic-applets = unstable.cosmic-applets;
-  #     cosmic-comp = unstable.cosmic-comp;
-  #   })
-  # ];
-
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -135,6 +101,9 @@
 
   security.rtkit.enable = true;
 
+  # Disable GNOME Keyring SSH agent component
+  services.gnome.gnome-keyring.enable = false;
+
   nixpkgs.config.allowUnfree = true;
 
   users.users.tim = {
@@ -212,6 +181,8 @@
     cups-brother-mfcl2800dw
     networkmanagerapplet
     pavucontrol
+    openvpn
+    networkmanager-openvpn
   ];
 
   system.stateVersion = "24.11"; # Did you read the comment?

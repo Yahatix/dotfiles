@@ -1,5 +1,5 @@
 {
-  description = "NixOS Configuration for ocm285";
+  description = "NixOS Configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -8,7 +8,6 @@
 
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nix-software-center.url = "github:snowfallorg/nix-software-center";
   };
 
   outputs =
@@ -32,9 +31,11 @@
       };
     in
     {
-
+      imports = [
+        (import "${home-manager}/nixos")
+      ];
       nixosConfigurations = {
-        ocm285 = nixpkgs.lib.nixosSystem {
+        nix = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
             inherit inputs outputs unstable;

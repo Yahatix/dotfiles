@@ -23,7 +23,7 @@
   home.stateVersion = "25.11"; # Please read the comment before changing.
   fonts.fontconfig.enable = true;
 
-  # The home.packages option allows you to install Nix packages into your
+  #The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
     unstable.vscode
@@ -35,38 +35,16 @@
     nixfmt-rfc-style
     mpv
     filezilla
-    rustdesk
+    rustdesk-flutter
+    resources
 
     unstable.bottles
     appimage-run
     flatpak
 
-    unstable.google-chrome
     firefox
 
     unstable.heroic
-    #modrinth-app
-    (
-      let
-        pname = "modrinth";
-        version = "0.10.20";
-        src = pkgs.fetchurl {
-          url = "https://launcher-files.modrinth.com/versions/${version}/linux/Modrinth%20App_${version}_amd64.AppImage";
-          hash = "sha256-2Dwbn+bKQPpvK1N/2yMZWxbcqA1S6IDaO0sljLytMxM=";
-        };
-        appimageContents = pkgs.appimageTools.extract { inherit pname version src; };
-      in
-      pkgs.appimageTools.wrapType2 {
-        inherit pname version src;
-        pkgs = pkgs;
-        extraInstallCommands = ''
-          install -m 444 -D ${appimageContents}/Modrinth\ App.desktop -t $out/share/applications
-          substituteInPlace $out/share/applications/Modrinth\ App.desktop \
-            --replace 'Exec=ModrinthApp' 'Exec=${pname}'
-          cp -r ${appimageContents}/usr/share/icons $out/share
-        '';
-      }
-    )
 
     unstable.uutils-coreutils
     nvtopPackages.full
@@ -76,11 +54,13 @@
     dig
     localsend
 
+    sweethome3d.application
     discord
+    teamspeak6-client
     simple-scan
     orca-slicer
     unstable.onlyoffice-desktopeditors
-    freecad
+    unstable.freecad
     unstable.gimp3
     unstable.inkscape
     unstable.beeper
@@ -90,65 +70,21 @@
     unstable.osu-lazer-bin
     oculante
     nextcloud-client
-    (
-      let
-        pname = "freeshow";
-        version = "1.4.8";
-        src = pkgs.fetchurl {
-          url = "https://github.com/ChurchApps/FreeShow/releases/download/v${version}/FreeShow-${version}-x86_64.AppImage";
-          hash = "sha256-SopfSQY4LfllOu9rd1xYFW0nDCYEUz8DNWT9P5JBeD4=";
-        };
-        appimageContents = pkgs.appimageTools.extract { inherit pname version src; };
-      in
-      pkgs.appimageTools.wrapType2 {
-        inherit pname version src;
-        pkgs = pkgs;
-        extraInstallCommands = ''
-          install -m 444 -D ${appimageContents}/${pname}.desktop -t $out/share/applications
-          substituteInPlace $out/share/applications/${pname}.desktop \
-            --replace 'Exec=AppRun' 'Exec=${pname}'
-          cp -r ${appimageContents}/usr/share/icons $out/share
-        '';
-      }
-    )
 
     gramps
 
-    # Work
-    unstable.slack
     mysql-workbench
     mariadb
-    jetbrains.idea-ultimate
 
     unstable.ctop
     unstable.nh
     noto-fonts-cjk-serif
   ];
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
-
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
-    # ".config/husky/init.sh".text = ''
-    #   eval "$(${pkgs.direnv}/bin/direnv hook bash)"
-    # '';
-  };
-
   home.sessionVariables = {
     FLAKE = "/home/tim/.dotfiles";
     NH_FLAKE = "/home/tim/.dotfiles";
     COSMIC_DATA_CONTROL_ENABLED = "1";
-    GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
-    SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
   };
 
   services = {
@@ -157,17 +93,8 @@
     };
   };
 
-  xdg.configFile."autostart/gnome-keyring-ssh.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=SSH Key Agent
-    Exec=/bin/true
-    Hidden=true
-  '';
-
   programs = {
     home-manager.enable = true;
-
     alacritty = {
       enable = true;
       package = unstable.alacritty;
@@ -175,16 +102,16 @@
 
     ssh = {
       enable = true;
-      enableDefaultConfig = true;
+      enableDefaultConfig = false;
+
       matchBlocks = {
-        "server" = {
-          hostname = "87.106.162.23";
-          user = "tim";
-          addKeysToAgent = "yes";
-        };
         "gemeinde" = {
           hostname = "112084.test-my-website.de";
           user = "34921f24455u1";
+        };
+        "*" = {
+          identityFile = "~/.ssh/id_privat";
+          addKeysToAgent = "yes";
         };
       };
     };

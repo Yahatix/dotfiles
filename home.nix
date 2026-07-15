@@ -1,12 +1,11 @@
 {
   pkgs,
   unstable,
+  lib,
   ...
 }:
 
 {
-  # imports = [ inputs.kimai-applet.homeManagerModules.default ];
-
   nixpkgs.config.allowUnfreePredicate = (pkg: true);
   # Home Manager needs a bit of information about you and the paths it should
   # manage
@@ -20,25 +19,31 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "25.11"; # Please read the comment before changing.
+  home.stateVersion = "26.05"; # Please read the comment before changing.
   fonts.fontconfig.enable = true;
 
   #The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    unstable.vscode
-    unstable.zed-editor
-
-    unstable.gitkraken
+    unstable.zed-editor-fhs
+    gitkraken
     nil
     nixd
-    nixfmt-rfc-style
+    nixfmt
     mpv
     filezilla
     rustdesk-flutter
     resources
+    devenv
+    ctop
+    nh
+    zellij
+    lazygit
+    gitui
+    godot
+    godot-mcp
 
-    unstable.bottles
+    bottles
     appimage-run
     flatpak
 
@@ -46,39 +51,33 @@
 
     unstable.heroic
 
-    unstable.uutils-coreutils
-    nvtopPackages.full
-    screen
-    neohtop
-    rustscan
-    dig
-    localsend
+    uutils-coreutils
+    #screen
+    #rustscan
+    #dig
+    #localsend
 
-    sweethome3d.application
     discord
     teamspeak6-client
     simple-scan
     orca-slicer
-    unstable.onlyoffice-desktopeditors
-    unstable.freecad
-    unstable.gimp3
-    unstable.inkscape
+    onlyoffice-desktopeditors
+    freecad
+    gimp3
+    inkscape
     unstable.beeper
     unstable.thunderbird-latest
-    unstable.spotify
+    spotify
     cameractrls-gtk4
-    unstable.osu-lazer-bin
     oculante
-    nextcloud-client
 
     gramps
 
     mysql-workbench
     mariadb
 
-    unstable.ctop
-    unstable.nh
     noto-fonts-cjk-serif
+
   ];
 
   home.sessionVariables = {
@@ -95,26 +94,6 @@
 
   programs = {
     home-manager.enable = true;
-    alacritty = {
-      enable = true;
-      package = unstable.alacritty;
-    };
-
-    ssh = {
-      enable = true;
-      enableDefaultConfig = false;
-
-      matchBlocks = {
-        "gemeinde" = {
-          hostname = "112084.test-my-website.de";
-          user = "34921f24455u1";
-        };
-        "*" = {
-          identityFile = "~/.ssh/id_privat";
-          addKeysToAgent = "yes";
-        };
-      };
-    };
 
     bash = {
       enable = true;
@@ -125,15 +104,11 @@
         ll = "eza -lia";
         vim = "nvim";
 
-        plat = "cd /srv/hybris/bin/platform";
-        fe = "cd /srv/hybris/bin/custom/ocm/ocmstorefront/web/webroot/WEB-INF/_ui-src";
-
         dcu = "docker compose up -d";
         dcd = "docker compose down";
+        dcl = "docker compose logs -f";
         dcr = "docker compose restart";
-
-        hybris = "zellij --layout /srv/hybris-flake/layout.kdl";
-        pms = "zellij --layout ~/projects/pms-flake/pms-layout.kdl";
+        dce = "docker compose exec";
       };
       bashrcExtra = ''
         # SSH Agent
@@ -146,6 +121,8 @@
           *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
         # pnpm end
+
+        eval "$(devenv hook bash)"
       '';
     };
 
@@ -163,11 +140,6 @@
     atuin = {
       enable = true;
       enableBashIntegration = true;
-    };
-
-    zellij = {
-      enable = true;
-      package = unstable.zellij;
     };
 
     eza = {
@@ -190,14 +162,6 @@
       enable = true;
       enableBashIntegration = true;
       nix-direnv.enable = true;
-    };
-
-    lazygit.enable = true;
-    gitui.enable = true;
-
-    vscode = {
-      enable = true;
-      package = unstable.vscode;
     };
   };
 }

@@ -3,7 +3,7 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 {
-  config,
+  lib,
   pkgs,
   unstable,
   inputs,
@@ -15,10 +15,18 @@
     inputs.home-manager.nixosModules.default
   ];
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    substituters = [ "https://nix-community.cachix.org" ];
+    trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
+    trusted-users = [
+      "root"
+      "tim"
+    ];
+  };
 
   # Bootloader.
   boot = {
@@ -93,9 +101,10 @@
   security.rtkit.enable = true;
 
   # Disable GNOME Keyring SSH agent component
-  services.gnome.gnome-keyring.enable = false;
+  #services.gnome.gnome-keyring.enable = false;
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [ ];
 
   users.users.tim = {
     isNormalUser = true;
@@ -106,6 +115,8 @@
       "docker"
       "input"
       "libvirtd"
+      "render"
+      "video"
     ];
   };
 
@@ -129,44 +140,46 @@
       };
     };
     spiceUSBRedirection.enable = true;
-    libvirtd = {
-      enable = true;
-      qemu = {
-        package = pkgs.qemu_full;
-        runAsRoot = true;
-        swtpm.enable = true;
-        vhostUserPackages = with pkgs; [ virtiofsd ];
-        # ovmf = {
-        #   enable = true;
-        #   packages = [
-        #     (pkgs.OVMF.override {
-        #       secureBoot = true;
-        #       tpmSupport = true;
-        #     }).fd
-        #   ];
-        # };
-      };
-    };
+    # libvirtd = {
+    #   enable = true;
+    #   qemu = {
+    #     package = pkgs.qemu_full;
+    #     runAsRoot = true;
+    #     swtpm.enable = true;
+    #     vhostUserPackages = with pkgs; [ virtiofsd ];
+    #     # ovmf = {
+    #     #   enable = true;
+    #     #   packages = [
+    #     #     (pkgs.OVMF.override {
+    #     #       secureBoot = true;
+    #     #       tpmSupport = true;
+    #     #     }).fd
+    #     #   ];
+    #     # };
+    #   };
+    # };
   };
-  programs.virt-manager.enable = true;
+  # programs.virt-manager.enable = true;
+
   programs.bash.blesh.enable = true;
-  programs.ssh.startAgent = true;
   programs.gamemode.enable = true;
-  programs.steam.enable = true;
-  # programs.nm-applet.enable = true;
+  programs.steam = {
+    enable = true;
+  };
 
   environment.systemPackages = with pkgs; [
-    nixfmt-rfc-style
+    nixfmt
     unzip
     zip
     tldr
-    unstable.wget
-    unstable.neovim
-    unstable.duf
-    unstable.htop
-    unstable.git
-    unstable.ps
-    unstable.gettext
+    wget
+    neovim
+    duf
+    htop
+    git
+    git-lfs
+    ps
+    gettext
     brscan5
     spice-gtk
     usbredir
@@ -178,8 +191,7 @@
     networkmanager-openvpn
   ];
 
-  system.stateVersion = "25.11"; # Did you read the comment?
-  system.autoUpgrade.enable = true;
+  system.stateVersion = "25.11";
 
   hardware = {
     graphics.enable = true;
